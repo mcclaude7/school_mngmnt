@@ -29,6 +29,7 @@ class Student(models.Model):
 class Parent(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     students = models.ManyToManyField(Student, related_name='parents')
+    address = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.user.get_full_name()
@@ -147,3 +148,43 @@ class SalaryPayment(models.Model):
 
     def __str__(self):
         return f"{self.employee.get_full_name()} - {self.amount} on {self.payment_date}"
+    
+class Homework(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="homeworks")
+    subject = models.CharField(max_length=100)
+    description = models.TextField()
+    due_date = models.DateField()
+
+    def __str__(self):
+        return f"Homework: {self.subject} for {self.student}"
+
+
+class Test(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="tests")
+    subject = models.CharField(max_length=100)
+    score = models.FloatField()
+    total_marks = models.FloatField()
+    date_taken = models.DateField()
+
+    def __str__(self):
+        return f"Test: {self.subject} - {self.score}/{self.total_marks}"
+
+
+class DisciplineRecord(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="discipline_records")
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)
+    action_taken = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Discipline: {self.student} - {self.date}"
+
+
+class AreaOfImprovement(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="improvement_areas")
+    subject = models.CharField(max_length=100)
+    feedback = models.TextField()
+
+    def __str__(self):
+        return f"Improvement: {self.subject} for {self.student}"
+    
