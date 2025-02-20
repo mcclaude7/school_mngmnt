@@ -65,28 +65,28 @@ class TeacherSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        field = '__all__' 
+        fields = '__all__' 
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        field = '__all__'
+        fields = '__all__'
 
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        field = '__all__'
+        fields = '__all__'
 
 # Exam, ExamResult, FeePayment, Timetable, SalaryPayment
 class ExamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exam
-        field = '__all__'
+        fields = '__all__'
 
 class ExamResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamResult
-        field = '__all__'
+        fields = '__all__'
 
 class FeePaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -95,12 +95,12 @@ class FeePaymentSerializer(serializers.ModelSerializer):
 class TimetableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timetable
-        field = '__all__'
+        fields = '__all__'
 
 class SalaryPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalaryPayment
-        field = '__all__'
+        fields = '__all__'
 
 class HomeworkSerializer(serializers.ModelSerializer):
     class Meta:
