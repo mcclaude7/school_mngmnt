@@ -1,8 +1,10 @@
 from django.contrib import admin
-from .models import Student, Teacher, Parent, Course, Enrollment, Attendance, Exam, ExamResult, FeePayment, Timetable, SalaryPayment, Homework, Test, DisciplineRecord, AreaOfImprovement
+from .models import (Student, Teacher, Parent, Course, Enrollment, Attendance, Exam, ExamResult, FeePayment, 
+                     Timetable, SalaryPayment, Homework, Test, DisciplineRecord, AreaOfImprovement, EnrollmentYear)
 # Register your models here.
 
 admin.site.register(Student),
+admin.site.register(EnrollmentYear),
 admin.site.register(Teacher),
 admin.site.register(Parent),
 admin.site.register(Course),

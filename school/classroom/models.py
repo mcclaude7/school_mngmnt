@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
+
 class User(AbstractUser):
     ROLE_CHOICES =[
         ('student', 'Student'),
@@ -16,14 +17,28 @@ class User(AbstractUser):
     profile_photo = models.ImageField(upload_to='profiles/', null=True, blank=True)
     contact_number = models.CharField(max_length=15, null=True, blank=True)
 
-class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    student_id = models.CharField(max_length=20, unique=True)
-    enrollment_date = models.DateField(auto_now_add=True)
-    grade_level = models.CharField(max_length=10)
+class EnrollmentYear(models.Model):  
+   # year = models.IntegerField(unique=True)
+    year = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return self.user.get_full_name()
+        return str(self.year)
+    
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    enrollment_year = models.ForeignKey('EnrollmentYear', on_delete=models.CASCADE, related_name='students', null=True, blank=True)  
+    grade = models.CharField(max_length=10)
+    student_id = models.CharField(max_length=10, unique=True, blank=True)  # Auto-generated
+
+    def save(self, *args, **kwargs):
+        if not self.student_id:
+            last_student = Student.objects.filter(enrollment_year=self.enrollment_year).order_by('id').last()
+            last_id = int(last_student.student_id[-4:]) + 1 if last_student else 1
+            self.student_id = f"{self.enrollment_year.year}{last_id:04d}"  
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.student_id} - {self.user.username}"
 
 # Parent Model
 class Parent(models.Model):
@@ -66,18 +81,30 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
+
 # Enrollment Model
 class Enrollment(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    # Make the year field nullable or provide a default value
+    year = models.IntegerField(unique=True, null=True, blank=True)  
+    # Option 1: Make it nullable
+    # OR
+    # year = models.IntegerField(unique=True, default=2025)  # Option 2: Provide a default value
+    
+    student = models.ManyToManyField('Student', related_name='enrollments')
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date_enrolled = models.DateField(auto_now_add=True)
     grade = models.CharField(max_length=5, null=True, blank=True)
 
     class Meta:
-        unique_together = ('student', 'course')
+        permissions = [
+            ('can_enroll_students', 'Can enroll students in courses'),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['year', 'course'], name='unique_year_course')
+        ]
 
     def __str__(self):
-        return f"{self.student.user.get_full_name()} - {self.course.course_name}"
+        return f"{self.year} - {self.course.course_name}"
 
 # Attendance Model
 class Attendance(models.Model):
@@ -187,4 +214,4 @@ class AreaOfImprovement(models.Model):
 
     def __str__(self):
         return f"Improvement: {self.subject} for {self.student}"
-    
+   
